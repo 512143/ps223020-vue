@@ -105,9 +105,9 @@ export default {
         .then((res) => {
           this.notes = res.data;
         })
-        .catch((error) => {
+        .catch((err) => {
           // eslint-отключение следующей строки
-          console.error(error);
+          console.error(err);
         });
     },
   //   addNote(payload) {
