@@ -126,9 +126,11 @@ export default {
     },
     addNote(payload) {
       const path = "http://localhost:56538/api/Notes";
-      axios.post(path, payload)
+      const headers = {
+        "Content-Type":"application/json"
+      };
+      axios.post(path, payload, {headers})
         .then(() => {
-          this.getNotes();
           console.log("POST был выполнен")
         })
         .catch((error) => {
@@ -145,6 +147,7 @@ export default {
     onSubmit(evt) {
       evt.preventDefault();
       this.$refs.addNoteModal.hide();
+      
       const payload = {
         title: this.addNoteForm.title,
         body: this.addNoteForm.body,
