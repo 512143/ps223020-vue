@@ -33,12 +33,16 @@
                 <button
                   type="button"
                   class="btn btn-warning btn-sm"
-                  v-b-modal.book-update-modal
+                  v-b-modal.note-update-modal
                   @click="editNote(note)"
                 >
                   > Изменить
                 </button>
-                <button type="button" class="btn btn-danger btn-sm">
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  @click="onDeleteNote(note)"
+                >
                   Удалить
                 </button>
               </td>
@@ -84,7 +88,7 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group
+        <!-- <b-form-group
           id="form-createTime-group"
           label="Текст"
           label-for="form-createTime-input"
@@ -96,7 +100,7 @@
             required
           >
           </b-form-input>
-        </b-form-group>
+        </b-form-group> -->
 
         <b-button type="submit" variant="primary">Сохранить</b-button>
         <b-button type="reset" variant="danger">Сбросить</b-button>
@@ -139,19 +143,6 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group
-          id="form-createDate-edit-group"
-          label="дата создания:"
-          label-for="form-createDate-edit-input"
-        >
-          <b-form-input
-            id="form-createDate-edit-input"
-            type="date"
-            v-model="editForm.createTime"
-            required
-          >
-          </b-form-input>
-        </b-form-group>
         <b-button type="submit" variant="primary">Обновить</b-button>
         <b-button type="reset" variant="danger">Закрыть</b-button>
       </b-form>
@@ -167,7 +158,6 @@ export default {
   data() {
     return {
       editForm: {
-       
         id: "",
         title: "",
         body: "",
@@ -189,21 +179,66 @@ export default {
   },
 
   methods: {
-     editNote(note) {
-          this.editForm = note;
-        },
-        
+    editNote(note) {
+      this.editForm = note;
+    },
+
+    removeNote(noteID) {
+  const path = `http://localhost:56538/api/Notes/${noteID}`;
+  axios.delete(path)
+    .then(() => {
+      this.getNotes();
+      this.message = 'Заметка удалена!';
+      this.showMessage = true;
+    })
+    .catch((error) => {
+      // eslint-отключение следующей строки
+      console.error(error);
+      this.getNotes();
+    });
+},
+onDeleteNote(note) {
+  this.removeNote(note.id);
+},
+
+    updateNote(payload, noteID) {
+      const path = `http://localhost:56538/api/Notes/${noteID}`;
+      const headers = {
+        "Content-Type": "application/json",
+      }
+      axios
+        .put(path, payload)
+        .then(() => {
+          this.getNotes();
+          this.message = "Заметка изменена!";
+          this.showMessage = true;
+        })
+        .catch((error) => {
+          // eslint-отключение следующей строки
+          console.error(error);
+          this.getNotes();
+        });
+    },
+
+    onResetUpdate(evt) {
+      evt.preventDefault();
+      this.$refs.editNoteModal.hide();
+      this.initForm();
+      this.getNotes();
+    },
+
     onSubmitUpdate(evt) {
       evt.preventDefault();
       this.$refs.editNoteModal.hide();
-      let read = false;
-      if (this.editForm.read[0]) read = true;
+
       const payload = {
-        title: this.addNoteForm.title,
-        body: this.addNoteForm.body,
+        id: this.editForm.id,
+        title: this.editForm.title,
+        body: this.editForm.body,
       };
-      this.updateBook(payload, this.editForm.id);
+      this.updateNote(payload, this.editForm.id);
     },
+
     getNotes() {
       const path = "http://localhost:56538/api/Notes";
       axios
@@ -225,7 +260,7 @@ export default {
         .post(path, payload, { headers })
         .then(() => {
           this.getNotes();
-          this.message = "Book added!";
+          this.message = "Заметка добавлена!";
           this.showMessage = true;
           console.log("POST был выполнен");
         })
@@ -239,6 +274,10 @@ export default {
       this.addNoteForm.title = "";
       this.addNoteForm.body = "";
       this.addNoteForm.createTime = "";
+      this.editForm.id = "";
+      this.editForm.title = "";
+      this.editForm.body = "";
+      this.editForm.createTime = "";
     },
     onSubmit(evt) {
       evt.preventDefault();
