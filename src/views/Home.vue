@@ -28,7 +28,7 @@
             <tr v-for="(note, index) in notes" :key="index">
               <td>{{ note.title }}</td>
               <td>{{ note.body }}</td>
-              <td>{{ note.createTime }}</td>
+              <td>{{ note.createTime | formatDate }}</td>
               <td>
                 <button
                   type="button"
@@ -184,7 +184,7 @@ export default {
     },
 
     removeNote(noteID) {
-  const path = `http://localhost:56538/api/Notes/${noteID}`;
+  const path = `http://localhost:63508/api/Notes/${noteID}`;
   axios.delete(path)
     .then(() => {
       this.getNotes();
@@ -202,7 +202,7 @@ onDeleteNote(note) {
 },
 
     updateNote(payload, noteID) {
-      const path = `http://localhost:56538/api/Notes/${noteID}`;
+      const path = `http://localhost:63508/api/Notes/${noteID}`;
       const headers = {
         "Content-Type": "application/json",
       }
@@ -240,7 +240,7 @@ onDeleteNote(note) {
     },
 
     getNotes() {
-      const path = "http://localhost:56538/api/Notes";
+      const path = "http://localhost:63508/api/Notes";
       axios
         .get(path)
         .then((res) => {
@@ -252,7 +252,7 @@ onDeleteNote(note) {
         });
     },
     addNote(payload) {
-      const path = "http://localhost:56538/api/Notes";
+      const path = "http://localhost:63508/api/Notes";
       const headers = {
         "Content-Type": "application/json",
       };

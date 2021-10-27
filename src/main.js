@@ -5,12 +5,18 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import BootstrapVue from 'bootstrap-vue';
+import moment from 'moment'
 
 
 
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue);
+
+Vue.filter('formatDate',function(value){
+  if (value)
+    return moment(String(value)).format('DD.MM.YYYY hh:mm')
+});
 
 new Vue({
   router,
